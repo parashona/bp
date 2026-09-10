@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Facebook Post Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient-start: #064e3b; 
+      --bg-gradient-end: #020617;
+      --card-bg: rgba(16, 185, 129, 0.05);
+      --card-border: rgba(16, 185, 129, 0.2);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-heading: #ffffff;
+      --accent-primary: #10b981; 
+      --accent-hover: #34d399;
+      --accent-success: #059669;
+      --code-bg: rgba(0, 0, 0, 0.4);
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --input-bg: rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      flex-grow: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      letter-spacing: -1px;
+      text-transform: uppercase;
+    }
+
+    .input-section {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px var(--shadow-color);
+      backdrop-filter: blur(12px);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--accent-primary);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: all 0.2s;
+      min-height: 200px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .prompt-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px var(--shadow-color);
+      backdrop-filter: blur(12px);
+      padding: 35px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .prompt-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .prompt-label::after {
+      content: "";
+      height: 1px;
+      flex-grow: 1;
+      background: var(--card-border);
+    }
+
+    .prompt-text {
+      background-color: var(--code-bg);
+      padding: 24px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.95rem;
+      color: #ecfdf5;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .copy-button {
+      align-self: flex-end;
+      padding: 14px 28px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #ffffff;
+      background-color: var(--accent-primary);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+    }
+
+    .copy-button:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    .copy-button.copied {
+      background-color: var(--accent-success);
+    }
+
+    .icon { width: 18px; height: 18px; }
+    .copied-icon { display: none; }
+    .copy-button.copied .copy-icon { display: none; }
+    .copy-button.copied .copied-icon { display: inline-block; }
+
+    footer {
+        margin-top: 60px;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        padding-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>FACEBOOK POST GENERATOR</h1>
+    </header>
+
+    <div class="input-section">
+      <div class="field-group">
+        <label for="blogInput">BLOG POST CONTENT</label>
+        <textarea id="blogInput" placeholder="Paste your blog post content here..."></textarea>
+      </div>
+    </div>
+
+    <main>
+      <div class="prompt-card">
+        <div class="prompt-label">Copy Prompt Below</div>
+        <pre id="displayPrompt" class="prompt-text">Answer the following prompt in Bengali (India).
+
+Rules:
+- Use only Bengali (India).
+- Always address the reader as "আপনি".
+- Never use "তুমি" or "তুই".
+- Use a natural Kolkata-style conversational tone.
+- Use natural, modern Bengali (India).
+- Avoid Bangladeshi vocabulary, spelling, and expressions.
+
+PROMPT
+
+AI ROLE
+
+You are an experienced Social Media Content Strategist and Facebook Copywriter.
+
+Your job is to transform a long-form blog post into a concise, engaging Facebook post that works as a discovery and curiosity-building entry point to the blog post.
+
+You must think like both:
+
+A content strategist, who understands the reader's problem, awareness level, motivation, and the role of social media within the content funnel.
+
+And a Facebook copywriter, who knows how to capture attention quickly, communicate one clear idea, create curiosity, and encourage interaction or the next step.
+
+Do not treat the blog post as content to be summarised.
+
+Instead, identify the most strategically useful angle for introducing the blog post to a Facebook audience.
+
+Your priority is to make the reader think:
+
+"This is relevant to me. I should read the full post."
+
+CONTEXT
+
+Platform: Facebook / Social Media
+
+Primary Objective: Very quickly capture attention, communicate one clear idea or message, create curiosity, start a conversation, and encourage the reader to take the next step.
+
+Role of the Facebook Post: The Facebook post is a gateway to the blog post, not a replacement for it.
+
+Core Structure: Hook → Core Message → Brief Explanation or Example → Call to Action
+
+TASK
+
+Review and analyse the blog post provided below.
+
+Then write one Facebook post strictly according to the AI role, context, objectives, structure, and rules in this prompt.
+
+Before writing, internally determine:
+
+1. What is the central issue, problem, or opportunity addressed by the blog post?
+
+2. Who is most likely to care about this issue?
+
+3. Is this issue likely to be known or recognised, or new or less recognised, by the target audience?
+
+4. What is the most compelling angle for introducing this issue on Facebook?
+
+5. What information should be deliberately withheld so that the reader has a reason to read the full blog post?
+
+Do not display this analysis in the final answer. Use it only to shape the Facebook post.
+
+PRIMARY CONTENT OBJECTIVE
+
+The main purpose of the Facebook post is to:
+
+1. Introduce the issue or problem addressed by the blog post.
+
+2. Help the reader recognise why the issue matters.
+
+3. Create curiosity or interest around the issue.
+
+4. Give the reader a reason to read the full blog post.
+
+5. Encourage an appropriate next step, preferably reading the blog post.
+
+The Facebook post should open the information loop, not close it.
+
+ISSUE-AWARENESS RULE
+
+First determine whether the central issue addressed by the blog post is likely to be known or recognised, or new or unknown, to the target audience.
+
+IF THE ISSUE IS NEW OR UNKNOWN
+
+Prioritise public awareness and issue recognition.
+
+Introduce the issue clearly.
+
+Make the reader understand what the issue is.
+
+Show briefly why it matters.
+
+Help the reader recognise how or why it may affect them.
+
+Create curiosity about the underlying reason, implication, or opportunity.
+
+If the blog post presents a solution, approach, or new way of thinking, highlight it enough to make the reader want to explore it.
+
+Do not explain the complete solution.
+
+Do not turn the Facebook post into a tutorial.
+
+Strategic priority: Make the reader aware of the issue first, then make them curious about the solution.
+
+IF THE ISSUE IS ALREADY KNOWN OR RECOGNISED
+
+Prioritise the insight, solution, or new perspective presented by the blog post.
+
+Start from the reader's existing awareness of the issue.
+
+Highlight an important insight, approach, solution, or perspective from the blog post.
+
+Show why the common way of thinking about the issue may be incomplete, ineffective, or worth reconsidering.
+
+Create curiosity about how the proposed approach works.
+
+Give enough information to establish relevance and credibility, but not enough to eliminate the need to read the blog post.
+
+Strategic priority: Use the known issue as the entry point, then create curiosity about the better way presented in the blog post.
+
+FACEBOOK COPYWRITING RULES
+
+1. Tone: Friendly, direct, conversational, and approachable.
+
+2. Focus on one central issue, idea, or message.
+
+3. Start with a strong hook that can stop a reader while scrolling.
+
+4. Make the opening relevant to the reader rather than starting with generic statements.
+
+5. Keep the post concise and easy to scan.
+
+6. Use natural Facebook-style paragraphing and spacing.
+
+7. Write for a real social-media reader, not like an article, report, academic paper, or sales letter.
+
+8. Avoid unnecessary background information.
+
+9. Avoid generic motivational statements and empty engagement bait.
+
+10. Do not simply summarise the blog post.
+
+11. Do not reproduce the blog post's introduction or conclusion.
+
+12. Do not reveal the complete process, framework, methodology, or solution contained in the blog post.
+
+13. Do not give away every important insight from the blog post.
+
+14. Preserve the central meaning, positioning, and promise of the blog post.
+
+15. Do not invent facts, statistics, examples, claims, or information that are not supported by the blog post.
+
+16. Do not use exaggerated clickbait or make promises that the blog post cannot fulfil.
+
+17. The post should create curiosity without creating confusion.
+
+18. The reader should be able to understand the basic issue even if they have never read the blog post.
+
+19. The post should create enough information gap to make reading the full blog post worthwhile.
+
+20. The Call to Action should feel like a natural continuation of the post, not a forced promotional message.
+
+21. Prefer a Call to Action that encourages the reader to read the full blog post.
+
+22. Where appropriate, the Call to Action may also invite a simple, relevant discussion or comment.
+
+23. Do not use multiple competing Calls to Action. Choose one primary next action.
+
+CONTENT-FUNNEL RULE
+
+Treat the Facebook post as the top-of-funnel or discovery layer and the blog post as the deeper information layer.
+
+Therefore:
+
+Facebook Post = Attention + Awareness + Curiosity
+
+Blog Post = Context + Explanation + Insight + Deeper Understanding
+
+Do not transfer the entire value of the blog post into the Facebook post.
+
+The Facebook post should create a natural curiosity gap between what the reader currently understands and what they can learn by reading the full blog post.
+
+OUTPUT RULE
+
+Return only the final, ready-to-publish Facebook post.
+
+Do not include:
+
+Analysis
+
+Strategy notes
+
+Explanations
+
+Labels such as "Hook", "Core Message", or "CTA"
+
+Alternative versions
+
+Comments about the writing process
+
+Notes to the user
+
+BLOG POST
+
+[Insert Your Blog Post Here]</pre>
+        <button class="copy-button" id="copyBtn">
+          <svg class="icon copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+          <svg class="icon copied-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <span class="button-text">Copy Prompt</span>
+        </button>
+      </div>
+    </main>
+
+    <footer>
+        Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.
+    </footer>
+  </div>
+
+  <script>
+    const blogInput = document.getElementById('blogInput');
+    const displayPrompt = document.getElementById('displayPrompt');
+    const copyBtn = document.getElementById('copyBtn');
+    const baseTemplate = displayPrompt.textContent;
+    const placeholder = "[Insert Your Blog Post Here]";
+
+    function updatePrompt() {
+      const userContent = blogInput.value.trim();
+      
+      if (userContent === "") {
+        displayPrompt.textContent = baseTemplate;
+      } else {
+        // Global replace of the placeholder with user text
+        displayPrompt.textContent = baseTemplate.split(placeholder).join(userContent);
+      }
+    }
+
+    blogInput.addEventListener('input', updatePrompt);
+
+    copyBtn.addEventListener('click', () => {
+      const textToCopy = displayPrompt.textContent;
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const btnText = copyBtn.querySelector('.button-text');
+        copyBtn.classList.add('copied');
+        btnText.textContent = 'Copied!';
+        
+        setTimeout(() => {
+          copyBtn.classList.remove('copied');
+          btnText.textContent = 'Copy Prompt';
+        }, 2000);
+      });
+    });
+  </script>
+
+</body>
+</html>

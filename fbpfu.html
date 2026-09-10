@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FB Post Follow-up Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient-start: #064e3b; 
+      --bg-gradient-end: #020617;
+      --card-bg: rgba(16, 185, 129, 0.05);
+      --card-border: rgba(16, 185, 129, 0.2);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-heading: #ffffff;
+      --accent-primary: #10b981; 
+      --accent-hover: #34d399;
+      --accent-success: #059669;
+      --code-bg: rgba(0, 0, 0, 0.4);
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --input-bg: rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      flex-grow: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      letter-spacing: -1px;
+      text-transform: uppercase;
+    }
+
+    /* Input Section Styles */
+    .input-section {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px var(--shadow-color);
+      backdrop-filter: blur(12px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .input-section { grid-template-columns: 1fr; }
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--accent-primary);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    .prompts-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    /* Prompt Card Styles */
+    .prompt-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px var(--shadow-color);
+      backdrop-filter: blur(12px);
+      padding: 35px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+
+    .prompt-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent-primary);
+    }
+
+    .prompt-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .prompt-label::after {
+      content: "";
+      height: 1px;
+      flex-grow: 1;
+      background: var(--card-border);
+    }
+
+    .prompt-text {
+      background-color: var(--code-bg);
+      padding: 24px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.95rem;
+      color: #ecfdf5;
+      line-height: 1.5;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    /* Button Styles */
+    .copy-button {
+      align-self: flex-end;
+      padding: 12px 24px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #ffffff;
+      background-color: var(--accent-primary);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .copy-button:hover {
+      background-color: var(--accent-hover);
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .copy-button.copied {
+      background-color: var(--accent-success);
+    }
+
+    .icon { width: 16px; height: 16px; }
+    .copied-icon { display: none; }
+    .copy-button.copied .copy-icon { display: none; }
+    .copy-button.copied .copied-icon { display: inline-block; }
+
+    footer {
+        margin-top: 60px;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        padding-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>FACEBOOK POST GENERATOR Follow-up</h1>
+    </header>
+
+    <div class="input-section">
+      <div class="field-group">
+        <label for="titleInput">Blog Post Title</label>
+        <input type="text" id="titleInput" placeholder="e.g. 5 Content Strategy Tips">
+      </div>
+      <div class="field-group">
+        <label for="urlInput">Blog Post Link (URL)</label>
+        <input type="text" id="urlInput" placeholder="https://example.com/post">
+      </div>
+    </div>
+
+    <main class="prompts-stack">
+      
+      <!-- Prompt #1 -->
+      <div class="prompt-card">
+        <div class="prompt-label">Prompt #1 - CTA Addition</div>
+        <pre class="prompt-text" id="p1" data-template="Add an end cta with the following details:
+Blog Post Title: [Blog Post Title]
+Blog Post Link: [URL]
+
+RULE (MANDATORY)
+
+CTA-টা এমনভাবে যোগ করো যাতে এটি promotional না শোনায় এবং Facebook post থেকে blog-এ যাওয়াটা স্বাভাবিক পরের ধাপ মনে হয়।">Add an end cta with the following details:
+Blog Post Title: [Blog Post Title]
+Blog Post Link: [URL]
+
+RULE (MANDATORY)
+
+CTA-টা এমনভাবে যোগ করো যাতে এটি promotional না শোনায় এবং Facebook post থেকে blog-এ যাওয়াটা স্বাভাবিক পরের ধাপ মনে হয়।</pre>
+        <button class="copy-button" onclick="copyText('p1', this)">
+          <svg class="icon copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+          <svg class="icon copied-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <span class="button-text">Copy Prompt</span>
+        </button>
+      </div>
+
+      <!-- Prompt #2 -->
+      <div class="prompt-card">
+        <div class="prompt-label">Prompt #2 - WhatsApp Repurpose</div>
+        <pre class="prompt-text" id="p2">Answer the following prompt in Bengali (India).
+
+Rules:
+- Use only Bengali (India).
+- Always address the reader as "আপনি".
+- Never use "তুমি" or "তুই".
+- Use a natural Kolkata-style conversational tone.
+- Use natural, modern Bengali (India).
+- Avoid Bangladeshi vocabulary, spelling, and expressions.
+
+PROMPT
+
+AI ROLE
+
+You are an experienced Social Media Content Strategist and WhatsApp Content Writer.
+
+Your task is to repurpose an existing Facebook post into a concise, engaging, and natural WhatsApp Channel post while preserving the original post's core message, intent, and voice.
+
+Do not simply copy the Facebook post.
+
+Adapt it specifically for the WhatsApp Channel format and reading behaviour.
+
+TASK
+
+Review the Facebook post provided in your previous reply and repurpose it into one ready-to-publish WhatsApp Channel post.
+
+The primary goal is to preserve the original Facebook post's central idea and purpose while making the content feel native to a WhatsApp Channel.
+
+WHATSAPP CHANNEL CONTENT OBJECTIVE
+
+The WhatsApp Channel post should:
+
+1. Capture attention quickly.
+
+2. Communicate one clear idea or message.
+
+3. Be easy to read on a mobile screen.
+
+4. Create interest or curiosity.
+
+5. Encourage the reader to take the intended next step from the original post.
+
+6. Preserve the original post's core meaning, positioning, and message.
+
+REPURPOSING RULES
+
+1. Do not treat the Facebook post as a text that must be reproduced word for word.
+
+2. Adapt the structure, wording, length, and presentation to suit a WhatsApp Channel.
+
+3. Preserve the original post's central message and strategic intent.
+
+4. Remove anything that feels unnecessarily long, repetitive, or better suited to Facebook.
+
+5. Make the opening immediately relevant and attention-grabbing.
+
+6. Use short paragraphs and mobile-friendly spacing.
+
+7. Keep the language natural, direct, and conversational.
+
+8. Avoid sounding like a formal article, advertisement, or broadcast announcement.
+
+9. Do not introduce a new topic or message that is not present in the original Facebook post.
+
+10. Do not invent facts, claims, examples, statistics, or information.
+
+11. Preserve any important context necessary for understanding the message.
+
+12. If the Facebook post contains a Call to Action, adapt it naturally for a WhatsApp Channel rather than copying it mechanically.
+
+13. If the original post directs readers to a blog post, link, resource, or other destination, retain that intended next step.
+
+14. Do not add multiple competing Calls to Action.
+
+15. Do not unnecessarily use emojis. Use them only when they genuinely improve readability or emphasis.
+
+16. Do not use hashtags unless they are essential to the original message or clearly useful for the WhatsApp Channel.
+
+17. Do not turn the post into a summary of the Facebook post. The result should feel like a native WhatsApp Channel post.
+
+18. Maintain the original tone and personality unless a change is necessary to make the content suitable for WhatsApp Channel.
+
+CONTENT-FUNNEL RULE
+
+Treat the WhatsApp Channel post as a direct-content and discovery layer.
+
+Its job is to deliver the core message quickly while creating enough interest for the reader to take the intended next step.
+
+Do not unnecessarily transfer every detail from the Facebook post.
+
+Where appropriate, preserve the information gap that encourages the reader to click, read, explore, or take the next action.
+
+OUTPUT REQUIREMENT
+
+Return only the final, ready-to-publish WhatsApp Channel post.
+
+Do not include:
+
+Analysis
+
+Explanations
+
+Strategy notes
+
+Headings such as "Hook", "Body", or "CTA"
+
+Alternative versions
+
+Comments about the adaptation process</pre>
+        <button class="copy-button" onclick="copyText('p2', this)">
+          <svg class="icon copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+          <svg class="icon copied-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <span class="button-text">Copy Prompt</span>
+        </button>
+      </div>
+
+      <!-- Prompt #3 -->
+      <div class="prompt-card">
+        <div class="prompt-label">Prompt #3 - WhatsApp Native Opening</div>
+        <pre class="prompt-text" id="p3">Make the opening more WhatsApp-native.</pre>
+        <button class="copy-button" onclick="copyText('p3', this)">
+          <svg class="icon copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+          <svg class="icon copied-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <span class="button-text">Copy Prompt</span>
+        </button>
+      </div>
+
+      <!-- Prompt #4 -->
+      <div class="prompt-card">
+        <div class="prompt-label">Prompt #4 - Broadcast Adaptation</div>
+        <pre class="prompt-text" id="p4">May I adapt your previous WhatsApp Channel post into a WhatsApp broadcast message?</pre>
+        <button class="copy-button" onclick="copyText('p4', this)">
+          <svg class="icon copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+          <svg class="icon copied-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <span class="button-text">Copy Prompt</span>
+        </button>
+      </div>
+
+    </main>
+
+    <footer>
+        Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.
+    </footer>
+  </div>
+
+  <script>
+    const titleInput = document.getElementById('titleInput');
+    const urlInput = document.getElementById('urlInput');
+    const p1 = document.getElementById('p1');
+    const baseP1 = p1.textContent;
+
+    function updatePrompt() {
+      const title = titleInput.value.trim() || '[Blog Post Title]';
+      const url = urlInput.value.trim() || '[URL]';
+      
+      let updated = baseP1.replace('[Blog Post Title]', title).replace('[URL]', url);
+      p1.textContent = updated;
+    }
+
+    titleInput.addEventListener('input', updatePrompt);
+    urlInput.addEventListener('input', updatePrompt);
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btnText = btn.querySelector('.button-text');
+        const prevText = btnText.textContent;
+        btnText.textContent = 'Copied!';
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btnText.textContent = prevText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+
+</body>
+</html>
